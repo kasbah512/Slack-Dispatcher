@@ -127,3 +127,4 @@ class Email_Functions():
 
     def print_messages(self):
         self.inbox['Slack'].apply(lambda x: print(x + '\n' + '#' * 150))
+        

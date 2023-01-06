@@ -118,3 +118,4 @@ class Parsers():
         message = message.as_string()
 
         return message
+        
