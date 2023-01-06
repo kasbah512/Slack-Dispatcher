@@ -1,0 +1,23 @@
+{
+    "token"         : "xoxb-rest of slack token here", 
+    "channel"       : "slack channel id here",
+
+    "username"      : "gmail username",
+    "password"      : "gmail app password", 
+
+    "sender"        : "client@gmail.com", 
+    "reciever"      : ["client@email.com", "manager@email.com"],
+    "report_reciever": "manager@email.com",
+
+    "accepted_symbol": "Slack Emoji Here",
+    "completed_symbol": "Slack Emoji Here",
+    "closed_symbol": "Slack Emoji Here",
+
+    "reminder_start" : "8:00 AM",
+    "reminder_stop"  : "8:00 PM",
+    "reminder_message": "Insert Message Here",
+
+    "acceptance threshold"  : numbere of minutes after no acceptance to remind,
+    "service threshold"  : number of minutes after incomplete service to remind,
+    "re-alert"      : number of minutes to wait between duplicate reminders
+}
