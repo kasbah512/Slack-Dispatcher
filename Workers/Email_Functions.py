@@ -9,7 +9,7 @@ from email import encoders
 import os
 import json
 from wrapt_timeout_decorator import *
-from Workers.Parsers import Parsers
+from Workers import Parsers
 
 class Email_Functions():
 

@@ -5,7 +5,7 @@ from functools import partial
 import os
 import json
 from wrapt_timeout_decorator import *
-from Workers.Parsers import Parsers
+from Workers import Parsers
 
 class Slack_Functions():
 
@@ -49,7 +49,10 @@ class Slack_Functions():
         return(self.users)
 
     timeout(10)
-    def update_messages(self, oldest):
+    def update_messages(self, days):
+        
+        oldest = oldest=(datetime.now() - timedelta(days=days)).timestamp()
+
         self.message_log = timeout(dec_timeout=10)(
             self.client.conversations_history)(channel=self.channel, oldest = oldest).data
 
@@ -81,6 +84,8 @@ class Slack_Functions():
         finally:
             self.actions = self.actions[~self.actions.index.duplicated(
                 keep='first')].sort_index(ascending=False)
+
+        self.actions[self.actions.index > datetime.now() - timedelta(days = 10)]
 
         return(self.actions)
 

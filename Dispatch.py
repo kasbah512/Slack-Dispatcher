@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from time import sleep
 import os
 
-from Workers.Slack_Functions import Slack_Functions
-from Workers.Email_Functions import Email_Functions
+from Workers import Slack_Functions
+from Workers import Email_Functions
 
 def App():
     Slack = Slack_Functions()
@@ -19,13 +19,14 @@ def App():
     while True:
         try:
             if boot:
-                oldest = oldest=(datetime.now() - timedelta(days=10)).timestamp()
+                days = 10
                 boot = False
 
             elif active:
-                oldest = oldest=(datetime.now() - timedelta(days=2)).timestamp()
+                days = 2
             
-            Slack.update_messages(oldest= oldest)
+            Slack.update_messages(days = days)
+            
             Slack.update_actions()
             Slack.apply_filters()
             Slack.post_reminder()
@@ -98,4 +99,5 @@ def App():
                 break
 
 if __name__ == '__main__':
+    print('Starting')
     App()
