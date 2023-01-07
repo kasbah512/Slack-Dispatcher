@@ -1,4 +1,6 @@
-from datetime import datetime, timedelta
+#!/usr/bin/env python 
+
+from datetime import datetime
 from time import sleep
 import os
 
@@ -44,9 +46,6 @@ def App():
             for message in pending_posts:
                 Slack.post_message(message = message)
 
-                print('Posting')
-                print(message)
-
             if len(Slack.pending_close) > 0:
                 
                 pending_close = Slack.pending_close
@@ -58,9 +57,6 @@ def App():
 
                     Email.close_job(subject)
                     Slack.close_job(ts)
-
-                    print(f'Closed {subject}')
-
 
             now = datetime.now()
 
@@ -99,6 +95,5 @@ def App():
                 break
 
 if __name__ == '__main__':
-    print('Starting')
     App()
     
