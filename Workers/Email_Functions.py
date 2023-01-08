@@ -8,7 +8,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 import json
-from wrapt_timeout_decorator import *
+from wrapt_timeout_decorator import timeout
 from Workers import Parsers
 
 class Email_Functions():

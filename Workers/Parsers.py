@@ -86,7 +86,7 @@ class Parsers():
 
         photolinks = ' '.join(photolinks)
 
-        text = text + photolinks
+        text = (text + photolinks).strip()
 
         return text
 
