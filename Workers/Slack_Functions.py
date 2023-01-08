@@ -103,10 +103,8 @@ class Slack_Functions():
                                           & (self.actions['Closed'].isna())
                                           ]
 
-        self.warn_acceptance = self.pending_acceptance[self.pending_acceptance.index > datetime.now(
-        ) - timedelta(minutes=self.acceptance_threshold)]
-        self.warn_service = self.pending_service[self.pending_service.index > datetime.now(
-        ) - timedelta(minutes=self.service_threshold)]
+        self.warn_acceptance = self.pending_acceptance[self.pending_acceptance.index > datetime.now() - timedelta(minutes=self.acceptance_threshold)]
+        self.warn_service = self.pending_service[self.pending_service.index > datetime.now() - timedelta(minutes=self.service_threshold)]
 
     def generate_report(self):
 
