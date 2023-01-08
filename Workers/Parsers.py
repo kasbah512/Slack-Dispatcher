@@ -27,10 +27,11 @@ class Parsers():
         return df
 
     def compile_actions(self, i, _df, users):
+        idx = _df['ts'].iloc[i]
+        text = _df['text'].iloc[i]
+        
         try:
             df = pd.DataFrame(_df['reactions'][i])
-            idx = _df['ts'].iloc[i]
-            text = _df['text'].iloc[i]
             df['ID'] = [text] * len(df)
             df['users'] = df['users'].apply(lambda x: x[0]).apply(
                 lambda x: users[users['id'] == x]['name'].iloc[0] if x != None else np.nan)
@@ -38,6 +39,8 @@ class Parsers():
 
         except:
             df = pd.DataFrame()
+            df['ID'] = [text]
+            df.index = [idx]
 
         return df
 
