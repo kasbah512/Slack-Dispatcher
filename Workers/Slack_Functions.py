@@ -65,8 +65,6 @@ class Slack_Functions():
 
         _actions = pd.concat(map(partial(self.Parsers.compile_actions, users=self.users, _df=df), range(len(df))))
 
-        _actions['users'] = _actions['users']
-
         actions = pd.DataFrame(index=_actions.index)
 
         actions['ID'] = _actions['ID']
@@ -86,6 +84,7 @@ class Slack_Functions():
                 keep='first')].sort_index(ascending=False)
 
         self.actions[self.actions.index > datetime.now() - timedelta(days = 10)]
+        self.actions = self.actions[~self.actions.isna().all(axis=1)]
 
         return(self.actions)
 
