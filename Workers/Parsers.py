@@ -44,7 +44,7 @@ class Parsers():
 
         return df
 
-    def format_slack_message(self, message):  # fix this shit
+    def format_slack_message(self, message): 
 
         text = re.findall(f'({self.subject}(.|\n)*)',
                           message.get_payload())[0][0]
