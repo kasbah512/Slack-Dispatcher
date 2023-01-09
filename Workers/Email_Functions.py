@@ -35,6 +35,11 @@ class Email_Functions():
         self.inbox = pd.DataFrame(
             columns=['Subject', 'Raw', 'Slack', 'Reply'], dtype=object)
 
+        if isinstance(self.reciever, list):
+            self.reciever = ', '.join(self.reciever)
+        elif isinstance(self.reciever, str):
+            self.reciever = self.reciever
+
     timeout(10)
     def refresh_login(self):
         self.imap = imaplib.IMAP4_SSL(host='imap.gmail.com', port='993')
@@ -71,12 +76,12 @@ class Email_Functions():
         return(self.inbox)
 
     @timeout(10)
-    def close_job(self, subject):
+    def close_job(self, subject, force = False):
 
         search = f'Not From "{self.sender}" Subject "{subject}"'
         sent_id = self.imap.search(None, search)[1][0].decode().split(' ')[-1]
 
-        if sent_id == '':
+        if sent_id == '' or force:
 
             smtp = smtplib.SMTP('smtp.gmail.com', '587')
             smtp.starttls()
@@ -85,7 +90,6 @@ class Email_Functions():
             message = self.inbox[self.inbox['Subject'] == subject]['Reply'].iloc[0]
             smtp.sendmail(self.username, self.reciever, message)
 
-            search = f'From "{self.sender}" Subject "{subject}"'
             sent_id = self.imap.search(None, search)[1][0].decode().split(' ')[-1]
 
             assert sent_id != ''
