@@ -79,7 +79,7 @@ class Email_Functions():
     @timeout(10)
     def close_job(self, subject, force = False):
 
-        query = f'Not From "{self.sender}" Subject "{subject}"'
+        query = f'From "{self.username}" Subject "{subject}"'
         sent_id = self.imap.search(None, query)[1][0].decode().split(' ')[-1]
 
         if sent_id == '' or force:
