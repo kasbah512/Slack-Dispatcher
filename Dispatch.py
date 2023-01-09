@@ -74,7 +74,7 @@ def App():
             elif now.weekday() != 0:
                 report_sent = False
 
-            sleep(5)
+            sleep(2)
 
         except KeyboardInterrupt:
             break
