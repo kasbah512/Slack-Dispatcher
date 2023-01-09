@@ -157,8 +157,8 @@ class Slack_Functions():
             
         now = datetime.now()
 
-        start = datetime.strptime(f'{now.date()} {self.reminder_start}', '%Y-%m-%d %H:%M %p')
-        stop = datetime.strptime(f'{now.date()} {self.reminder_stop}', '%Y-%m-%d %H:%M %p')
+        start = datetime.strptime(f'{now.date()} {self.reminder_start}', '%Y-%m-%d %I:%M %p')
+        stop = datetime.strptime(f'{now.date()} {self.reminder_stop}', '%Y-%m-%d %I:%M %p')
 
         df = pd.DataFrame(self.message_log['messages'])
         ts = df[df['text'] == self.reminder_message]['ts']
