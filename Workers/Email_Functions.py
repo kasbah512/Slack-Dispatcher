@@ -37,8 +37,9 @@ class Email_Functions():
 
         if isinstance(self.reciever, list):
             self.reciever = ', '.join(self.reciever)
-        elif isinstance(self.reciever, str):
-            self.reciever = self.reciever
+
+        if isinstance(self.report_reciever, list):
+            self.report_reciever = ', '.join(self.report_reciever)
 
     timeout(10)
     def refresh_login(self):
@@ -78,8 +79,8 @@ class Email_Functions():
     @timeout(10)
     def close_job(self, subject, force = False):
 
-        search = f'Not From "{self.sender}" Subject "{subject}"'
-        sent_id = self.imap.search(None, search)[1][0].decode().split(' ')[-1]
+        query = f'Not From "{self.sender}" Subject "{subject}"'
+        sent_id = self.imap.search(None, query)[1][0].decode().split(' ')[-1]
 
         if sent_id == '' or force:
 
@@ -90,16 +91,16 @@ class Email_Functions():
             message = self.inbox[self.inbox['Subject'] == subject]['Reply'].iloc[0]
             smtp.sendmail(self.username, self.reciever, message)
 
-            sent_id = self.imap.search(None, search)[1][0].decode().split(' ')[-1]
+            sent_id = self.imap.search(None, query)[1][0].decode().split(' ')[-1]
 
             assert sent_id != ''
 
     @timeout(10)
-    def send_report(self, date, filename, file):
+    def send_report(self, date, filename, file, force = False):
 
         inbox_id = self.imap.search(None, f'Subject "Ops Report" On "{date}"')[1][0].decode()
 
-        if inbox_id == '':
+        if inbox_id == '' or force:
             sender = self.username
             password = self.password
             receiver = self.report_reciever

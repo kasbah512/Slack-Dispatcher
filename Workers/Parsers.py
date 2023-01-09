@@ -16,12 +16,17 @@ class Parsers():
         self.subject = settings['subject']
         self.username = settings['username']
         self.reciever = settings['reciever']
+        self.report_reciever = settings['report_reciever']
+
+        if isinstance(self.reciever, list):
+            self.reciever = ', '.join(self.reciever)
+        if isinstance(self.report_reciever, list):
+            self.report_reciever = ', '.join(self.report_reciever)
 
     def format_log(self, messages):
         df = pd.DataFrame(messages)
 
-        df['text'] = df['text'].apply(lambda x: x.split(
-            '\n')[0] if self.subject in x else np.nan)  # fix this
+        df['text'] = df['text'].apply(lambda x: x.split('\n')[0] if self.subject in x else np.nan)
         df['ts'] = df['ts'].astype(float).apply(datetime.fromtimestamp)
 
         return df
