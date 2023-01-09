@@ -1,5 +1,4 @@
-#!/usr/bin/env python 
-
+#! .venv/bin/python3 
 from datetime import datetime
 from time import sleep
 import os
