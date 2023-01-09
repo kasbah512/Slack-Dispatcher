@@ -67,6 +67,7 @@ class Slack_Functions():
 
         actions = pd.DataFrame(index=_actions.index)
 
+        actions['ts'] = _actions['ts']
         actions['ID'] = _actions['ID']
         actions['Accepted'] = _actions[_actions['name']
                                        == self.accepted_symbol]['users']
@@ -74,7 +75,6 @@ class Slack_Functions():
                                        == self.completed_symbol]['users']
         actions['Closed'] = _actions[_actions['name']
                                      == self.closed_symbol]['users']
-        actions['ts'] = _actions['ts']
 
         try:
             self.actions = pd.concat([actions, self.actions])
