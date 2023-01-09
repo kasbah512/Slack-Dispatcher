@@ -74,6 +74,7 @@ class Slack_Functions():
                                        == self.completed_symbol]['users']
         actions['Closed'] = _actions[_actions['name']
                                      == self.closed_symbol]['users']
+        actions['ts'] = _actions['ts']
 
         try:
             self.actions = pd.concat([actions, self.actions])
