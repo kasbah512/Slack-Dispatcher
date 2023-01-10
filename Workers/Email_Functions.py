@@ -58,6 +58,8 @@ class Email_Functions():
 
         inbox = response[1][0].decode().split(' ')
 
+        assert len(inbox) > 1
+
         self.inbox = self.inbox[self.inbox.index.isin(inbox)]
 
         for inbox_id in inbox:

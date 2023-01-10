@@ -35,21 +35,18 @@ def App():
             Email.update_emails()
 
             pending_posts = Email.inbox[~Email.inbox['Subject'].isin(Slack.actions['ID'])]['Slack']
+            pending_close = Slack.pending_close
 
             for message in pending_posts:
                 Slack.post_message(message = message)
 
-            if len(Slack.pending_close) > 0:
-                
-                pending_close = Slack.pending_close
+            for i in range(len(pending_close)):
 
-                for i in range(len(pending_close)):
+                ts = pending_close['ts'].iloc[i]
+                subject = pending_close['ID'].iloc[i]
 
-                    ts = pending_close['ts'].iloc[i]
-                    subject = pending_close['ID'].iloc[i]
-
-                    Email.close_job(subject)
-                    Slack.close_job(ts)
+                Email.close_job(subject)
+                Slack.close_job(ts)
 
             now = datetime.now()
 
