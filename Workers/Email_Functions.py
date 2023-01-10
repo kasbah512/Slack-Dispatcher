@@ -58,21 +58,26 @@ class Email_Functions():
 
         inbox = response[1][0].decode().split(' ')
 
+        with open(os.sys.path[0] + '/Inbox.txt', 'a') as f:
+            f.write(str(inbox) + '\n')
+
         self.inbox = self.inbox[self.inbox.index.isin(inbox)]
 
         for inbox_id in inbox:
 
             if inbox_id not in self.inbox.index:
-                self.inbox.loc[inbox_id] = [None] * len(self.inbox.columns)
+                response = self.imap.fetch(inbox_id, 'rfc822')
+                assert response[0] == 'OK'
 
-                _message = self.imap.fetch(inbox_id, 'rfc822')[1][0][1]
+                _message = response[1][0][1]
                 message = email.message_from_bytes(_message)
+
+                self.inbox.loc[inbox_id] = [None] * len(self.inbox.columns)
 
                 self.inbox['Subject'].loc[inbox_id] = message['Subject']
                 self.inbox['Raw'].loc[inbox_id] = message
                 self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message)
-
-        self.inbox['Reply'] = self.inbox['Raw'].apply(self.Parsers.format_reply_email)
+                self.inbox['Reply'] = self.Parsers.format_reply_email(message)
 
         return(self.inbox)
 
