@@ -72,7 +72,7 @@ def App():
                 print(now)
                 f.write(now + '\n')
 
-            sleep(2)
+            sleep(1.2)
 
         except KeyboardInterrupt:
             break
