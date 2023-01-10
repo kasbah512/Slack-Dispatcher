@@ -58,9 +58,6 @@ class Email_Functions():
 
         inbox = response[1][0].decode().split(' ')
 
-        with open(os.sys.path[0] + '/Inbox.txt', 'a') as f:
-            f.write(str(inbox) + '\n')
-
         self.inbox = self.inbox[self.inbox.index.isin(inbox)]
 
         for inbox_id in inbox:
