@@ -68,10 +68,10 @@ def App():
 
             with open(os.sys.path[0] + '/Success.txt', 'a') as f:
                 now = str(datetime.now())
-
+                print(now)
                 f.write(now + '\n')
 
-            sleep(60)
+            sleep(2)
 
         except KeyboardInterrupt:
             break
