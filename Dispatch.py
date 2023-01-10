@@ -1,4 +1,5 @@
-#! .venv/bin/python3 
+#! .venv/bin/python3
+
 from datetime import datetime
 from time import sleep
 import os
@@ -71,12 +72,13 @@ def App():
                 print(now)
                 f.write(now + '\n')
 
-            sleep(60)
+            sleep(2)
 
         except KeyboardInterrupt:
             break
 
         except Exception as e:
+            sleep(60)
 
             Email.refresh_login()
 
