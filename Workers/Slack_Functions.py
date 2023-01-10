@@ -161,7 +161,7 @@ class Slack_Functions():
         stop = datetime.strptime(f'{now.date()} {self.reminder_stop}', '%Y-%m-%d %I:%M %p')
 
         df = pd.DataFrame(self.message_log['messages'])
-        ts = df[df['text'] == self.reminder_message]['ts']
+        ts = df[df['text'] == self.reminder_message]['ts'].astype(float)
 
         if (start <= now and now < stop) and (len(self.warn_acceptance) + len(self.warn_service) > 0):
 
