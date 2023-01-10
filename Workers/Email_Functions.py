@@ -77,7 +77,7 @@ class Email_Functions():
                 self.inbox['Subject'].loc[inbox_id] = message['Subject']
                 self.inbox['Raw'].loc[inbox_id] = message
                 self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message)
-                self.inbox['Reply'] = self.Parsers.format_reply_email(message)
+                self.inbox['Reply'].loc[inbox_id] = self.Parsers.format_reply_email(message)
 
         return(self.inbox)
 
