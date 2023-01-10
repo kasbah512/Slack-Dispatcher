@@ -167,18 +167,17 @@ class Slack_Functions():
 
             if len(ts) == 0:
                 response = self.client.chat_postMessage(channel=self.channel,
-                                                        text=self.reminder_message,
-                                                        unfurl_links=False,
-                                                        unfurl_media=False
+                                                        text=self.reminder_message
+
                 )
                 assert response['ok'] == True
 
-                self.reminder_ts = float(response['ts']) ## 
+                self.reminder_ts = float(response['ts'])
             
-            elif now - datetime.fromtimestamp([ts.iloc[0]]).total_seconds() / 60 > self.re_alert:
+            elif now - timedelta(minutes=self.re_alert) > datetime.fromtimestamp(ts.iloc[0]):
 
                 response = self.client.chat_delete(channel=self.channel,
-                                                   ts=self.reminder_ts
+                                                   ts=ts.iloc[0]
                 )
                 assert response['ok'] == True
 
