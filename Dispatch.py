@@ -7,23 +7,22 @@ from Workers import Slack_Functions
 from Workers import Email_Functions
 
 def App():
+
     Slack = Slack_Functions()
     Email = Email_Functions()
 
-    Slack.update_users()
-
     boot = True
-    active = True
     report_sent = False
     error_count = 0
 
     while True:
         try:
             if boot:
+                Slack.update_users()
                 days = 10
                 boot = False
 
-            elif active:
+            else:
                 days = 2
             
             Slack.update_messages(days = days)
@@ -35,12 +34,6 @@ def App():
             Email.update_emails()
 
             pending_posts = Email.inbox[~Email.inbox['Subject'].isin(Slack.actions['ID'])]['Slack']
-
-            if len(pending_posts) > 0:
-                active = True
-
-            elif len(Slack.pending_service) == 0:
-                active = False
 
             for message in pending_posts:
                 Slack.post_message(message = message)
@@ -73,7 +66,7 @@ def App():
             elif now.weekday() != 0:
                 report_sent = False
 
-            sleep(2)
+            sleep(60)
 
         except KeyboardInterrupt:
             break
