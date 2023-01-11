@@ -49,6 +49,9 @@ class Email_Functions():
 
     timeout(10)
     def update_emails(self):
+        response = self.imap.noop()
+        assert response[0] == 'OK'
+
         cut = (datetime.now() - timedelta(days=7)).strftime("%d-%b-%Y")
         query = f'From "{self.sender}" Subject "{self.subject}" SINCE "{cut}"'
 
