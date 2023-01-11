@@ -98,6 +98,8 @@ class Email_Functions():
             message = self.inbox[self.inbox['Subject'] == subject]['Reply'].iloc[0]
             smtp.sendmail(self.username, self.reciever, message)
 
+            self.imap.noop()
+
             sent_id = self.imap.search(None, query)[1][0].decode().split(' ')[-1]
 
             assert sent_id != ''
@@ -132,10 +134,12 @@ class Email_Functions():
             text = message.as_string()
 
             session.sendmail(sender, receiver, text)
+        
+            self.imap.noop()
 
-        inbox_id = self.imap.search(None, f'Subject "Ops Report" On "{date}"')[1][0].decode()
+            inbox_id = self.imap.search(None, f'Subject "Ops Report" On "{date}"')[1][0].decode()
 
-        assert inbox_id != ''
+            assert inbox_id != ''
 
     def print_messages(self):
         self.inbox['Slack'].apply(lambda x: print(x + '\n' + '#' * 150))
