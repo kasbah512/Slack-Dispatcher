@@ -64,11 +64,6 @@ def App():
             elif now.weekday() != 0:
                 report_sent = False
 
-            with open(os.sys.path[0] + '/Success.txt', 'a') as f:
-                now = str(datetime.now())
-                print(now)
-                f.write(now + '\n')
-
             sleep(1.2)
 
         except KeyboardInterrupt:
