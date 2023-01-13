@@ -70,7 +70,7 @@ def App():
             break
 
         except Exception as e:
-            sleep(60)
+            sleep(1.2)
 
             Email.refresh_login()
 
