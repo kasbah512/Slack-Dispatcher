@@ -99,8 +99,7 @@ class Parsers():
 
     def format_reply_email(self, message):
         text = message.get_payload().replace('=\r\n', '')
-        date = datetime.strptime(message['Date'], '%d %b %Y %H:%M:%S %z').strftime(
-            '%a, %b %d, %Y at %I:%M %p')
+        date = datetime.strptime(message['Date'], '%d %b %Y %H:%M:%S %z').strftime('%a, %b %d, %Y at %I:%M %p')
 
         with open(os.sys.path[0] + '/Files/Reply_Template.html', 'r') as f:
             html = f.read()
