@@ -35,12 +35,6 @@ class Email_Functions():
         self.inbox = pd.DataFrame(
             columns=['Subject', 'Raw', 'Slack', 'Reply'], dtype=object)
 
-        if isinstance(self.reciever, list):
-            self.reciever = ', '.join(self.reciever)
-
-        if isinstance(self.report_reciever, list):
-            self.report_reciever = ', '.join(self.report_reciever)
-
     timeout(10)
     def refresh_login(self):
         self.imap = imaplib.IMAP4_SSL(host='imap.gmail.com', port='993')
@@ -116,7 +110,12 @@ class Email_Functions():
 
             message = MIMEMultipart()
             message['From'] = sender
-            message['To'] = receiver
+
+            if isinstance(self.report_reciever, list):
+                message['To'] = ', '.join(self.report_reciever)
+            else:
+                message['To'] = self.report_reciever
+
             message['Subject'] = 'Ops Report'
 
             payload = MIMEBase('application', 'csv', Name=filename)
@@ -133,7 +132,7 @@ class Email_Functions():
 
             text = message.as_string()
 
-            session.sendmail(sender, receiver, text)
+            session.sendmail(sender, self.report_reciever, text)
         
             self.imap.noop()
 
