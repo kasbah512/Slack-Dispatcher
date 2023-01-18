@@ -106,7 +106,6 @@ class Email_Functions():
         if inbox_id == '' or force:
             sender = self.username
             password = self.password
-            receiver = self.report_reciever
 
             message = MIMEMultipart()
             message['From'] = sender
