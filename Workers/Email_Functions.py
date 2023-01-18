@@ -42,11 +42,11 @@ class Email_Functions():
         self.imap.select('"[Gmail]/All Mail"')
 
     timeout(10)
-    def update_emails(self):
+    def update_emails(self, days = 7):
         response = self.imap.noop()
         assert response[0] == 'OK'
 
-        cut = (datetime.now() - timedelta(days=7)).strftime("%d-%b-%Y")
+        cut = (datetime.now() - timedelta(days=days)).strftime("%d-%b-%Y")
         query = f'From "{self.sender}" Subject "{self.subject}" SINCE "{cut}"'
 
         response = self.imap.search(None, query)
