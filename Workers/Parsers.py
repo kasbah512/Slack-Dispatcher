@@ -18,11 +18,6 @@ class Parsers():
         self.reciever = settings['reciever']
         self.report_reciever = settings['report_reciever']
 
-        if isinstance(self.reciever, list):
-            self.reciever = ', '.join(self.reciever)
-        if isinstance(self.report_reciever, list):
-            self.report_reciever = ', '.join(self.report_reciever)
-
     def format_log(self, messages):
         df = pd.DataFrame(messages)
 
