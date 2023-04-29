@@ -54,7 +54,7 @@ class Slack_Functions():
         oldest = oldest=(datetime.now() - timedelta(days=days)).timestamp()
 
         self.message_log = timeout(dec_timeout=10)(
-            self.client.conversations_history)(channel=self.channel, oldest = oldest).data
+            self.client.conversations_history)(channel=self.channel, oldest = oldest, limit=1000).data
 
         assert self.message_log['ok'] == True
 
