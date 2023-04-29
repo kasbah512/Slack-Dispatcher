@@ -70,7 +70,7 @@ def App():
             break
 
         except Exception as e:
-            sleep(1.2)
+            sleep(1.2 + len(Slack.actions) // 100)
 
             Email.refresh_login()
 
