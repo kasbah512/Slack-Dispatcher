@@ -3,6 +3,7 @@
 from datetime import datetime
 from time import sleep
 import os
+from math import ceil
 
 from Workers import Slack_Functions
 from Workers import Email_Functions
@@ -24,7 +25,7 @@ def App():
                 boot = False
 
             else:
-                days = 2
+                days = 6
             
             Slack.update_messages(days = days)
             
@@ -64,13 +65,18 @@ def App():
             elif now.weekday() != 0:
                 report_sent = False
 
-            sleep(1.2)
+            t = ceil(len(Slack.actions) / 100) * 1.2 ## dynamic rate limiting of 50 requests per min 60/50 = 1.2
+
+            if t != 0:
+                sleep(t)
+            else:
+                sleep(1.2)
 
         except KeyboardInterrupt:
             break
 
         except Exception as e:
-            sleep(1.2 + len(Slack.actions) // 100)
+            sleep(1.2)
 
             Email.refresh_login()
 
