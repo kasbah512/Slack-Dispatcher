@@ -12,7 +12,7 @@
     "accepted_symbol": "Slack Emoji Here",
     "completed_symbol": "Slack Emoji Here",
     "closed_symbol": "Slack Emoji Here",
-    "canceled_symbol": "Slack Emoji Here",
+    "impound_symbol": "Slack Emoji Here",
 
     "reminder_start" : "8:00 AM",
     "reminder_stop"  : "8:00 PM",
