@@ -18,7 +18,7 @@
     "reminder_stop"  : "8:00 PM",
     "reminder_message": "Insert Message Here",
 
-    "acceptance threshold"  : number of minutes after no acceptance to remind,
-    "service threshold"  : number of minutes after incomplete service to remind,
-    "re-alert"      : number of minutes to wait between duplicate reminders
+    "acceptance threshold"  : 30,
+    "service threshold"  : 60,
+    "re-alert"      : 30
 }
