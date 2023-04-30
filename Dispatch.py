@@ -55,10 +55,16 @@ def App():
                 Slack.update_users()
 
                 date = now.strftime('%d-%b-%Y')
-                filename = f'Ops_Report_{date}.csv'
-                file = Slack.generate_report().to_csv()
 
-                Email.send_report(date, filename, file)
+                filenames = [f'Completion_Report_{date}.csv',
+                                f'Impound_Report_{date}.csv'
+                ]
+
+                files = [Slack.generate_report(metric='Complete').to_csv(),
+                            Slack.generate_report(metric='Impounded').to_csv()
+                ]
+
+                Email.send_report(date, filenames, files)
 
                 report_sent = True
 
