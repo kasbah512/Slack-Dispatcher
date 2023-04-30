@@ -20,6 +20,7 @@ class Slack_Functions():
         self.accepted_symbol = settings["accepted_symbol"]
         self.completed_symbol = settings["completed_symbol"]
         self.closed_symbol = settings["closed_symbol"]
+        self.canceled_symbol = settings["canceled_symbol"]
 
         self.acceptance_threshold = settings['acceptance threshold']
         self.service_threshold = settings['service threshold']
@@ -75,6 +76,8 @@ class Slack_Functions():
                                        == self.completed_symbol]['users']
         actions['Closed'] = _actions[_actions['name']
                                      == self.closed_symbol]['users']
+        actions['Canceled'] = _actions[_actions['name']
+                                     == self.canceled_symbol]['users']
 
         try:
             self.actions = pd.concat([actions, self.actions])
@@ -107,7 +110,7 @@ class Slack_Functions():
         self.warn_acceptance = self.pending_acceptance[self.pending_acceptance.index < datetime.now() - timedelta(minutes=self.acceptance_threshold)]
         self.warn_service = self.pending_service[self.pending_service.index < datetime.now() - timedelta(minutes=self.service_threshold)]
 
-    def generate_report(self):
+    def generate_report(self, metric = 'Complete'):
 
         dates = pd.date_range(datetime.now() - timedelta(days=7),
                               datetime.now() - timedelta(days=1)).date
@@ -115,7 +118,7 @@ class Slack_Functions():
         report = []
         for date in dates:
             report.append(self.actions[self.actions.index.date ==
-                                             date]['Complete'].value_counts()
+                                             date][metric].value_counts()
             )
 
 
