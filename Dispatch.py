@@ -51,7 +51,7 @@ def App():
 
             now = datetime.now()
 
-            if now.weekday() == 0 and now.hour == 9 and report_sent == False: ### monday at 9 am
+            if now.weekday() == 6 and now.hour == 20 and report_sent == False: ### sunday at 8 pm
                 Slack.update_users()
 
                 date = now.strftime('%d-%b-%Y')
@@ -68,7 +68,7 @@ def App():
 
                 report_sent = True
 
-            elif now.weekday() != 0:
+            elif now.weekday() != 6:
                 report_sent = False
 
             t = ceil(len(Slack.actions) / 100) * 1.2 ## dynamic rate limiting of 50 requests per min 60/50 = 1.2
