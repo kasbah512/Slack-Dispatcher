@@ -57,11 +57,11 @@ def App():
                 date = now.strftime('%d-%b-%Y')
 
                 filenames = [f'Completion_Report_{date}.csv',
-                                f'Impound_Report_{date}.csv'
+                             f'Impound_Report_{date}.csv'
                 ]
 
                 files = [Slack.generate_report(metric='Complete').to_csv(),
-                            Slack.generate_report(metric='Impounded').to_csv()
+                         Slack.generate_report(metric='Impounded').to_csv()
                 ]
 
                 Email.send_report(date, filenames, files)
