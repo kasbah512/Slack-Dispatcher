@@ -20,7 +20,7 @@ class Slack_Functions():
         self.accepted_symbol = settings["accepted_symbol"]
         self.completed_symbol = settings["completed_symbol"]
         self.closed_symbol = settings["closed_symbol"]
-        self.canceled_symbol = settings["canceled_symbol"]
+        self.impound_symbol = settings["impound_symbol"]
 
         self.acceptance_threshold = settings['acceptance threshold']
         self.service_threshold = settings['service threshold']
@@ -76,8 +76,8 @@ class Slack_Functions():
                                        == self.completed_symbol]['users']
         actions['Closed'] = _actions[_actions['name']
                                      == self.closed_symbol]['users']
-        actions['Canceled'] = _actions[_actions['name']
-                                     == self.canceled_symbol]['users']
+        actions['Impounded'] = _actions[_actions['name']
+                                     == self.impound_symbol]['users']
 
         try:
             self.actions = pd.concat([actions, self.actions])
