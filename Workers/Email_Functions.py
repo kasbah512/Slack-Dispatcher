@@ -99,7 +99,7 @@ class Email_Functions():
             assert sent_id != ''
 
     @timeout(10)
-    def send_report(self, date, filename, file, force = False):
+    def send_report(self, date, filenames, files, force = False):
 
         inbox_id = self.imap.search(None, f'Subject "Ops Report" On "{date}"')[1][0].decode()
 
@@ -117,12 +117,18 @@ class Email_Functions():
 
             message['Subject'] = 'Ops Report'
 
-            payload = MIMEBase('application', 'csv', Name=filename)
-            payload.set_payload(file)
-            encoders.encode_base64(payload)  # encode the attachment
-            payload.add_header('Content-Decomposition',
-                            'attachment', filename=filename)
-            message.attach(payload)
+            assert isinstance(files, list)
+            assert isinstance(filenames, list)
+            assert len(files) == len(filenames)
+
+            for i in range(len(files)):
+
+                payload = MIMEBase('application', 'csv', Name=filenames[i])
+                payload.set_payload(files[i])
+                encoders.encode_base64(payload)  # encode the attachment
+                payload.add_header('Content-Decomposition',
+                            'attachment', filename=filenames[i])
+                message.attach(payload)
 
             session = smtplib.SMTP('smtp.gmail.com', '587')  # use gmail with port
             session.starttls()  # enable security
