@@ -78,6 +78,8 @@ class Slack_Functions():
                                        == self.closed_symbol]['users']
         actions['Impounded'] = _actions[_actions['name']
                                        == self.impound_symbol]['users']
+        
+        actions['Impounded'] = actions['Impounded'].mask(actions['Impounded'].isna() == False, actions['Complete']) ## properly gives credit to whoever completed the task
 
         try:
             self.actions = pd.concat([actions, self.actions])
@@ -112,8 +114,8 @@ class Slack_Functions():
 
     def generate_report(self, metric = 'Complete'):
 
-        dates = pd.date_range(datetime.now() - timedelta(days=7),
-                              datetime.now() - timedelta(days=1)).date
+        dates = pd.date_range(datetime.now() - timedelta(days=6),
+                              datetime.now()).date
 
         report = []
         for date in dates:
