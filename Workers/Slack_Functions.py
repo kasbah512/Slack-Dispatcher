@@ -159,18 +159,20 @@ class Slack_Functions():
 
     def update_master(self):
 
+        path = os.sys.path[0] + '/Files/Master_Record.csv'
+        
         try:
-            df = pd.read_csv('Files/Master_Record.csv', index_col=0)
+            df = pd.read_csv(path, index_col=0)
             df.index = pd.to_datetime(df.index)
 
             df = pd.concat([self.actions, df])
             
             df = df[~df.index.duplicated(keep='first')]
-            df.to_csv('Files/Master_Record.csv')
+            df.to_csv(path)
 
         except FileNotFoundError:
 
-            self.actions.to_csv('Files/Master_Record.csv')
+            self.actions.to_csv(path)
 
     timeout(10)
     def post_reminder(self, reminder_ts = None): ## fix to handle ts after crash
