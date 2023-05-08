@@ -53,6 +53,7 @@ def App():
 
             if now.weekday() == 6 and now.hour == 20 and report_sent == False: ### sunday at 8 pm
                 Slack.update_users()
+                Slack.update_master()
 
                 date = now.strftime('%d-%b-%Y')
 

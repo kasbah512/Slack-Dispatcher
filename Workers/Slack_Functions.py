@@ -157,6 +157,21 @@ class Slack_Functions():
         )
         assert response['ok'] == True
 
+    def update_master(self):
+
+        try:
+            df = pd.read_csv('Files/Master_Record.csv', index_col=0)
+            df.index = pd.to_datetime(df.index)
+
+            df = pd.concat([self.actions, df])
+            
+            df = df[~df.index.duplicated(keep='first')]
+            df.to_csv('Files/Master_Record.csv')
+
+        except FileNotFoundError:
+
+            self.actions.to_csv('Files/Master_Record.csv')
+
     timeout(10)
     def post_reminder(self, reminder_ts = None): ## fix to handle ts after crash
         if reminder_ts != None:
