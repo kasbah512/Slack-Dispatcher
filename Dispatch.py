@@ -43,6 +43,7 @@ def App():
 
             for ts in Slack.actions[Slack.actions['ID'].duplicated(keep='last') & (Slack.actions['ID'].isna() == False)]['ts']: ## deletes duplicates
                 Slack.client.chat_delete(channel=Slack.channel, ts=ts)
+                Slack.actions = Slack.actions[Slack.actions['ts'] != ts] ## removes message from log
 
             for i in range(len(pending_close)):
 
