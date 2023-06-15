@@ -41,6 +41,9 @@ def App():
             for message in pending_posts:
                 Slack.post_message(message = message)
 
+            for ts in Slack.actions[Slack.actions['ID'].duplicated(keep='last') & (Slack.actions['ID'].isna() == False)]['ts']: ## deletes duplicates
+                Slack.client.chat_delete(channel=Slack.channel, ts=ts)
+
             for i in range(len(pending_close)):
 
                 ts = pending_close['ts'].iloc[i]
