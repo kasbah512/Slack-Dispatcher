@@ -1,6 +1,7 @@
 Files/settings.json
 Files/Reply_Template.html
 Files/Master_Record.csv
+Data_Record.csv
 Scrap.ipynb
 Workers/__pycache__
 .venv
