@@ -25,7 +25,7 @@ def App():
                 boot = False
 
             else:
-                days = 6
+                days = 5
             
             Slack.update_messages(days = days)
             
