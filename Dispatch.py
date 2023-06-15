@@ -33,7 +33,7 @@ def App():
             Slack.apply_filters()
             Slack.post_reminder()
             
-            Email.update_emails()
+            Email.update_emails(days = (days - 2))
 
             pending_posts = Email.inbox[~Email.inbox['Subject'].isin(Slack.actions['ID'])]['Slack']
             pending_close = Slack.pending_close
