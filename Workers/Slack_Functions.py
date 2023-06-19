@@ -146,7 +146,13 @@ class Slack_Functions():
                                                 unfurl_links=False,
                                                 unfurl_media=False
         )
-        assert response['ok'] == True
+        assert response['ok'] == TrueS
+
+    timeout(10)
+    def clear_duplicates(self):
+        for ts in self.actions[self.actions['ID'].duplicated(keep='last') & (self.actions['ID'].isna() == False)]['ts']: ## deletes duplicates
+            self.client.chat_delete(channel=self.channel, ts=ts)
+            self.actions = self.actions[self.actions['ts'] != ts] ## removes message from log
 
     timeout(10)
     def close_job(self, ts):
