@@ -146,7 +146,7 @@ class Slack_Functions():
                                                 unfurl_links=False,
                                                 unfurl_media=False
         )
-        assert response['ok'] == TrueS
+        assert response['ok'] == True
 
     timeout(10)
     def clear_duplicates(self):
