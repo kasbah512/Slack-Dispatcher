@@ -80,6 +80,13 @@ def App():
             else:
                 sleep(1.2)
 
+            if error_count != 0:
+                error_count = 0
+
+                with open(os.sys.path[0] + '/Files/ERRORS.txt', 'a') as f:
+                    error = datetime.now().strftime('%m/%d %I:%M %p') + ' ' + 'SYSTEM OK'
+                    f.write(error + '\n')
+
         except KeyboardInterrupt:
             break
 
