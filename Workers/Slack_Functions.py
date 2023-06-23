@@ -89,7 +89,7 @@ class Slack_Functions():
             self.actions = self.actions[~self.actions.index.duplicated(
                 keep='first')].sort_index(ascending=False)
 
-        self.actions[self.actions.index > datetime.now() - timedelta(days = 10)]
+        self.actions = self.actions[self.actions.index > datetime.now() - timedelta(days = 10)]
         self.actions = self.actions[~self.actions.isna().all(axis=1)]
 
         return(self.actions)
@@ -191,13 +191,24 @@ class Slack_Functions():
         stop = datetime.strptime(f'{now.date()} {self.reminder_stop}', '%Y-%m-%d %I:%M %p')
 
         df = pd.DataFrame(self.message_log['messages'])
-        ts = df[df['text'] == self.reminder_message]['ts'].astype(float)
+        ts = df[df['text'].apply(lambda x: 'Active Requests' in x)]['ts'].astype(float)
 
         if (start <= now and now < stop) and (len(self.warn_acceptance) + len(self.warn_service) > 0):
 
+            df = pd.concat(self.warn_acceptance, self.warn_service).sort_index()
+            request_ts = df['ts'].iloc[0]
+            request_ts = request_ts.replace('.', '')
+            
+            message = self.reminder_message
+            
+            url = f'https://limeops-austin.slack.com/archives/{self.channel}/p{request_ts}'
+            link = f'<{url}|Active Requests>'
+
+            message = message.replace('Active Requests', link)
+
             if len(ts) == 0:
                 response = self.client.chat_postMessage(channel=self.channel,
-                                                        text=self.reminder_message
+                                                        text=message
 
                 )
                 assert response['ok'] == True
@@ -212,7 +223,7 @@ class Slack_Functions():
                 assert response['ok'] == True
 
                 response = self.client.chat_postMessage(channel=self.channel,
-                                                        text=self.reminder_message
+                                                        text=self.message
                 )
                 assert response['ok'] == True
 
