@@ -59,7 +59,7 @@ class Slack_Functions():
 
         assert self.message_log['ok'] == True
 
-    def update_actions(self):
+    def update_actions(self, cutoff = 10):
 
         messages = self.message_log['messages']
         df = self.Parsers.format_log(messages)
@@ -89,7 +89,7 @@ class Slack_Functions():
             self.actions = self.actions[~self.actions.index.duplicated(
                 keep='first')].sort_index(ascending=False)
 
-        self.actions = self.actions[self.actions.index > datetime.now() - timedelta(days = 10)]
+        self.actions = self.actions[self.actions.index > datetime.now() - timedelta(days = cutoff)]
         self.actions = self.actions[~self.actions.isna().all(axis=1)]
 
         return(self.actions)
@@ -195,7 +195,7 @@ class Slack_Functions():
 
         if (start <= now and now < stop) and (len(self.warn_acceptance) + len(self.warn_service) > 0):
 
-            df = pd.concat(self.warn_acceptance, self.warn_service).sort_index()
+            df = pd.concat([self.warn_acceptance, self.warn_service]).sort_index()
             request_ts = df['ts'].iloc[0]
             request_ts = request_ts.replace('.', '')
             
