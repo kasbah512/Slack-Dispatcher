@@ -208,7 +208,9 @@ class Slack_Functions():
 
             if len(ts) == 0:
                 response = self.client.chat_postMessage(channel=self.channel,
-                                                        text=message
+                                                        text=message,
+                                                        unfurl_links=False,
+                                                        unfurl_media=False
 
                 )
                 assert response['ok'] == True
@@ -223,7 +225,9 @@ class Slack_Functions():
                 assert response['ok'] == True
 
                 response = self.client.chat_postMessage(channel=self.channel,
-                                                        text=self.message
+                                                        text=self.message,
+                                                        unfurl_links=False,
+                                                        unfurl_media=False
                 )
                 assert response['ok'] == True
 
