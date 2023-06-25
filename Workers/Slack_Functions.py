@@ -196,7 +196,7 @@ class Slack_Functions():
         if (start <= now and now < stop) and (len(self.warn_acceptance) + len(self.warn_service) > 0):
 
             df = pd.concat([self.warn_acceptance, self.warn_service]).sort_index()
-            request_ts = df['ts'].iloc[0]
+            request_ts = str(df['ts'].iloc[0])
             request_ts = request_ts.replace('.', '')
             
             message = self.reminder_message
