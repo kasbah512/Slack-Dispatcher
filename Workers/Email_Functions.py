@@ -13,6 +13,7 @@ from Workers import Parsers
 
 class Email_Functions():
 
+    @timeout(10)
     def __init__(self):
         with open(os.sys.path[0] + '/Files/settings.json', 'r') as f:
             settings = json.loads(f.read())
@@ -35,13 +36,13 @@ class Email_Functions():
         self.inbox = pd.DataFrame(
             columns=['Subject', 'Raw', 'Slack', 'Reply'], dtype=object)
 
-    timeout(10)
+    @timeout(10)
     def refresh_login(self):
         self.imap = imaplib.IMAP4_SSL(host='imap.gmail.com', port='993')
         self.imap.login(self.username, self.password)
         self.imap.select('"[Gmail]/All Mail"')
 
-    timeout(10)
+    @timeout(10)
     def update_emails(self, days = 7):
         response = self.imap.noop()
         assert response[0] == 'OK'

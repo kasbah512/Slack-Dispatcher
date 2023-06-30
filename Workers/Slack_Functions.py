@@ -9,7 +9,7 @@ from Workers import Parsers
 
 class Slack_Functions():
 
-    timeout(10)
+    @timeout(10)
     def __init__(self):
         with open(os.sys.path[0] + '/Files/settings.json', 'r') as f:
             settings = json.loads(f.read())
@@ -35,7 +35,7 @@ class Slack_Functions():
 
         self.client = slack.WebClient(token=self.token)
 
-    timeout(10)
+    @timeout(10)
     def update_users(self):
 
         users = timeout(dec_timeout=10)(
@@ -49,7 +49,7 @@ class Slack_Functions():
 
         return(self.users)
 
-    timeout(10)
+    @timeout(10)
     def update_messages(self, days):
         
         oldest = oldest=(datetime.now() - timedelta(days=days)).timestamp()
@@ -138,7 +138,7 @@ class Slack_Functions():
 
         return(self.report)
 
-    timeout(10)
+    @timeout(10)
     def post_message(self, message):
 
         response = self.client.chat_postMessage(channel=self.channel,
@@ -148,13 +148,13 @@ class Slack_Functions():
         )
         assert response['ok'] == True
 
-    timeout(10)
+    @timeout(10)
     def clear_duplicates(self):
         for ts in self.actions[self.actions['ID'].duplicated(keep='last') & (self.actions['ID'].isna() == False)]['ts']: ## deletes duplicates
             self.client.chat_delete(channel=self.channel, ts=ts)
             self.actions = self.actions[self.actions['ts'] != ts] ## removes message from log
 
-    timeout(10)
+    @timeout(10)
     def close_job(self, ts):
 
         response = self.client.reactions_add(channel=self.channel,
