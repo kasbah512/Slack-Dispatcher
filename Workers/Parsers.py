@@ -7,6 +7,12 @@ from email.mime.text import MIMEText
 import os
 import json
 
+def Recieved_time(date):
+
+    date = pd.to_datetime(datetime.strptime(date, '%d %b %Y %H:%M:%S %z')).tz_convert('America/Chicago')
+
+    return date
+
 class Parsers():
     def __init__(self):
         with open(os.sys.path[0] + '/Files/settings.json', 'r') as f:
@@ -88,7 +94,9 @@ class Parsers():
 
         photolinks = ' '.join(photolinks)
 
-        text = (text + photolinks).strip()
+        recieved = 'Recieved: ' + Recieved_time(message['Date']).strftime('%I:%M %p %m-%d-%Y')
+
+        text = (text + recieved + '\n' + photolinks).strip()
 
         return text
 
