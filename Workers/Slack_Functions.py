@@ -180,7 +180,7 @@ class Slack_Functions():
 
             self.actions.to_csv(path)
 
-    timeout(10)
+    @timeout(10)
     def post_reminder(self, reminder_ts = None): ## fix to handle ts after crash
         if reminder_ts != None:
             self.reminder_ts = reminder_ts
