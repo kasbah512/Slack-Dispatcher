@@ -94,7 +94,7 @@ class Parsers():
 
         photolinks = ' '.join(photolinks)
 
-        recieved = 'Recieved: ' + Recieved_time(message['Date']).strftime('%I:%M %p %m-%d-%Y')
+        recieved = 'Received: ' + Recieved_time(message['Date']).strftime('%I:%M %p %m-%d-%Y')
 
         text = (text + recieved + '\n' + photolinks).strip()
 
