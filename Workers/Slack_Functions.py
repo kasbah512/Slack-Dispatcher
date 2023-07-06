@@ -225,7 +225,7 @@ class Slack_Functions():
                 assert response['ok'] == True
 
                 response = self.client.chat_postMessage(channel=self.channel,
-                                                        text=self.message,
+                                                        text=message,
                                                         unfurl_links=False,
                                                         unfurl_media=False
                 )
