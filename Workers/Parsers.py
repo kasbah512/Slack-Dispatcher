@@ -52,7 +52,7 @@ class Parsers():
 
         return df
 
-    def format_slack_message(self, message): 
+    def format_slack_message(self, message, counter): 
 
         text = re.findall(f'({self.subject}(.|\n)*)',
                           message.get_payload())[0][0]
@@ -96,7 +96,7 @@ class Parsers():
 
         recieved = 'Received: ' + Recieved_time(message['Date']).strftime('%I:%M %p %m-%d-%Y')
 
-        text = (text + recieved + '\n' + photolinks).strip()
+        text = (text + recieved + '\n' + photolinks).strip() + f'\n#{counter}'
 
         return text
 

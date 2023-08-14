@@ -8,6 +8,7 @@ from math import ceil
 from Workers import Slack_Functions
 from Workers import Email_Functions
 
+
 def App():
 
     Slack = Slack_Functions()
@@ -26,21 +27,22 @@ def App():
 
             else:
                 days = 5
-            
-            Slack.update_messages(days = days)
-            
+
+            Slack.update_messages(days=days)
+
             Slack.update_actions()
             Slack.apply_filters()
             Slack.post_reminder()
             Slack.clear_duplicates()
-            
-            Email.update_emails(days = (days - 2))
 
-            pending_posts = Email.inbox[~Email.inbox['Subject'].isin(Slack.actions['ID'])]['Slack']
+            Email.update_emails(days=(days - 2))
+
+            pending_posts = Email.inbox[~Email.inbox['Subject'].isin(
+                Slack.actions['ID'])]['Slack']
             pending_close = Slack.pending_close
 
             for message in pending_posts:
-                Slack.post_message(message = message)
+                Slack.post_message(message=message)
 
             for i in range(len(pending_close)):
 
@@ -52,7 +54,7 @@ def App():
 
             now = datetime.now()
 
-            if now.weekday() == 6 and now.hour == 20 and report_sent == False: ### sunday at 8 pm
+            if now.weekday() == 6 and now.hour == 20 and report_sent == False:  # sunday at 8 pm
                 Slack.update_users()
                 Slack.update_master()
 
@@ -60,11 +62,11 @@ def App():
 
                 filenames = [f'Completion_Report_{date}.csv',
                              f'Impound_Report_{date}.csv'
-                ]
+                             ]
 
                 files = [Slack.generate_report(metric='Complete').to_csv(),
                          Slack.generate_report(metric='Impounded').to_csv()
-                ]
+                         ]
 
                 Email.send_report(date, filenames, files)
 
@@ -73,7 +75,8 @@ def App():
             elif now.weekday() != 6:
                 report_sent = False
 
-            t = ceil(len(Slack.actions) / 100) * 1.2 ## dynamic rate limiting of 50 requests per min 60/50 = 1.2
+            # dynamic rate limiting of 50 requests per min 60/50 = 1.2
+            t = ceil(len(Slack.actions) / 100) * 1.2
 
             if t != 0:
                 sleep(t)
@@ -99,13 +102,13 @@ def App():
             error = datetime.now().strftime('%m/%d %I:%M %p') + ' ' + str(e)
 
             print(error)
-            
+
             with open(os.sys.path[0] + '/Files/ERRORS.txt', 'a') as f:
                 f.write(error + '\n')
 
             if error_count > 3:
                 break
 
+
 if __name__ == '__main__':
     App()
-    

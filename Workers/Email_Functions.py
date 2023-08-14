@@ -9,7 +9,7 @@ from email import encoders
 import os
 import json
 from wrapt_timeout_decorator import timeout
-from Workers import Parsers
+from Workers import Parsers, Recieved_time
 
 class Email_Functions():
 
@@ -34,7 +34,7 @@ class Email_Functions():
         self.Parsers = Parsers()
 
         self.inbox = pd.DataFrame(
-            columns=['Subject', 'Raw', 'Slack', 'Reply'], dtype=object)
+            columns=['Subject', 'Raw', 'Slack', 'Reply', 'Date', 'Counter'], dtype=object)
 
     @timeout(10)
     def refresh_login(self):
@@ -60,6 +60,9 @@ class Email_Functions():
 
         self.inbox = self.inbox[self.inbox.index.isin(inbox)]
 
+        counter = 1
+        initial = (datetime.now() - timedelta(days=days)).date()
+
         for inbox_id in inbox:
 
             if inbox_id not in self.inbox.index:
@@ -67,15 +70,25 @@ class Email_Functions():
                 assert response[0] == 'OK'
 
                 _message = response[1][0][1]
+
                 message = email.message_from_bytes(_message)
+                date = Recieved_time(message['Date']).date()
 
                 self.inbox.loc[inbox_id] = [None] * len(self.inbox.columns)
 
                 self.inbox['Subject'].loc[inbox_id] = message['Subject']
                 self.inbox['Raw'].loc[inbox_id] = message
-                self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message)
+                self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message, counter)
                 self.inbox['Reply'].loc[inbox_id] = self.Parsers.format_reply_email(message)
+                self.inbox['Date'].loc[inbox_id] = date
+                self.inbox['Counter'].loc[inbox_id] = counter
 
+
+            if self.inbox['Date'].loc[inbox_id] == initial:
+                counter += 1
+            else:
+                counter = 1
+                initial = self.inbox['Date'].loc[inbox_id]
         return(self.inbox)
 
     @timeout(10)
