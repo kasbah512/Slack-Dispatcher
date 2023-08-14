@@ -81,6 +81,9 @@ class Email_Functions():
                 self.inbox['Reply'].loc[inbox_id] = self.Parsers.format_reply_email(message)
                 self.inbox['Date'].loc[inbox_id] = date
 
+            else:
+                message = self.inbox['Raw'].loc[inbox_id]
+                
             if self.inbox['Date'].loc[inbox_id] == initial:
                 counter += 1
             else:
