@@ -78,7 +78,6 @@ class Email_Functions():
 
                 self.inbox['Subject'].loc[inbox_id] = message['Subject']
                 self.inbox['Raw'].loc[inbox_id] = message
-                self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message, counter)
                 self.inbox['Reply'].loc[inbox_id] = self.Parsers.format_reply_email(message)
                 self.inbox['Date'].loc[inbox_id] = date
 
@@ -88,8 +87,9 @@ class Email_Functions():
                 counter = 1
                 initial = self.inbox['Date'].loc[inbox_id]
 
+            self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message, counter)
             self.inbox['Counter'].loc[inbox_id] = counter
-            
+
         return(self.inbox)
 
     @timeout(10)
