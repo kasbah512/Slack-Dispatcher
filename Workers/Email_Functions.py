@@ -42,7 +42,7 @@ class Email_Functions():
         self.imap.login(self.username, self.password)
         self.imap.select('"[Gmail]/All Mail"')
 
-    @timeout(30)    ## raises error if not complete after n seconds
+    @timeout(300)    ## raises error if not complete after n seconds
     def update_emails(self, days = 7):
         response = self.imap.noop() ## refreshes mail data
         assert response[0] == 'OK'  ## ensures action was success, raises error if not
