@@ -10,7 +10,7 @@ from Workers import Parsers
 class Slack_Functions():
 
     @timeout(10)
-    def __init__(self):
+    def __init__(self): ## Loads configuration settings
         with open(os.sys.path[0] + '/Files/settings.json', 'r') as f:
             settings = json.loads(f.read())
 
@@ -36,7 +36,7 @@ class Slack_Functions():
         self.client = slack.WebClient(token=self.token)
 
     @timeout(10)
-    def update_users(self):
+    def update_users(self): ## Turns json format into a usable DataFrame. for translating ID Codes to User names 
 
         users = timeout(dec_timeout=10)(
             self.client.users_list())['members']
@@ -50,12 +50,12 @@ class Slack_Functions():
         return(self.users)
 
     @timeout(10)
-    def update_messages(self, days):
+    def update_messages(self, days): ## Fetches current slack messages within a specified timeframe
         
         oldest = oldest=(datetime.now() - timedelta(days=days)).timestamp()
 
         self.message_log = timeout(dec_timeout=10)(
-            self.client.conversations_history)(channel=self.channel, oldest = oldest, limit=1000).data
+            self.client.conversations_history)(channel=self.channel, oldest = oldest, limit=1000).data ## limits to 1k messages. (if we have more than 1k active, we will have bigger problems)
 
         assert self.message_log['ok'] == True
 
@@ -64,7 +64,7 @@ class Slack_Functions():
         messages = self.message_log['messages']
         df = self.Parsers.format_log(messages)
 
-        _actions = pd.concat(map(partial(self.Parsers.compile_actions, users=self.users, _df=df), range(len(df))))
+        _actions = pd.concat(map(partial(self.Parsers.compile_actions, users=self.users, _df=df), range(len(df)))) ## one single row (unformatted)
 
         actions = pd.DataFrame(index=_actions.index)
 
@@ -86,8 +86,7 @@ class Slack_Functions():
         except AttributeError:
             self.actions = actions
         finally:
-            self.actions = self.actions[~self.actions.index.duplicated(
-                keep='first')].sort_index(ascending=False)
+            self.actions = self.actions[~self.actions.index.duplicated(keep='first')].sort_index(ascending=False)
 
         self.actions = self.actions[self.actions.index > datetime.now() - timedelta(days = cutoff)]
         self.actions = self.actions[~self.actions.isna().all(axis=1)]
@@ -95,26 +94,26 @@ class Slack_Functions():
         return(self.actions)
 
     def apply_filters(self):
-        self.pending_acceptance = self.actions[(self.actions['ID'].isna() == False)  # only tasks from dispatch
-                                               & (self.actions['Accepted'].isna())
+        self.pending_acceptance = self.actions[(self.actions['ID'].isna() == False)  ## only tasks from dispatch
+                                               & (self.actions['Accepted'].isna())   ## Has not been accepted
                                                ]
 
-        self.pending_service = self.actions[(self.actions['ID'].isna() == False)  # only tasks from dispatch
-                                            & (self.actions['Complete'].isna())
-                                            & (self.actions['Closed'].isna())
+        self.pending_service = self.actions[(self.actions['ID'].isna() == False)    ## only tasks from dispatch
+                                            & (self.actions['Complete'].isna())     ## is not complete
+                                            & (self.actions['Closed'].isna())       ## is not closed (could be manually closed by others)
                                             ]
 
-        self.pending_close = self.actions[(self.actions['ID'].isna() == False)  # only tasks from dispatch
-                                          & (self.actions['Complete'].isna() == False)
-                                          & (self.actions['Closed'].isna())
+        self.pending_close = self.actions[(self.actions['ID'].isna() == False)          ## only tasks from dispatch
+                                          & (self.actions['Complete'].isna() == False)  ## is complete
+                                          & (self.actions['Closed'].isna())             ## is not closed (could be manually closed by others)
                                           ]
 
-        self.warn_acceptance = self.pending_acceptance[(self.pending_acceptance.index < datetime.now() - timedelta(minutes=self.acceptance_threshold)) &
+        self.warn_acceptance = self.pending_acceptance[(self.pending_acceptance.index < datetime.now() - timedelta(minutes=self.acceptance_threshold)) & ## has not been marked as accepted in a timely manner, and is within the agreed upon hours
                                                        (self.pending_acceptance['Closed'].isna())]
         
-        self.warn_service = self.pending_service[self.pending_service.index < datetime.now() - timedelta(minutes=self.service_threshold)]
+        self.warn_service = self.pending_service[self.pending_service.index < datetime.now() - timedelta(minutes=self.service_threshold)] ## hasnt been completed in a reasonable time, and is within the agreed upon hours
 
-    def generate_report(self, metric = 'Complete'):
+    def generate_report(self, metric = 'Complete'): ## creates a table for the past week colums are days, and rows are employees.
 
         dates = pd.date_range(datetime.now() - timedelta(days=6),
                               datetime.now()).date
@@ -139,31 +138,31 @@ class Slack_Functions():
         return(self.report)
 
     @timeout(10)
-    def post_message(self, message):
+    def post_message(self, message): ## posts to slack
 
         response = self.client.chat_postMessage(channel=self.channel,
                                                 text=message,
-                                                unfurl_links=False,
-                                                unfurl_media=False
+                                                unfurl_links=False, ## wont render webpages in slack
+                                                unfurl_media=False  ## wont render images in slack
         )
-        assert response['ok'] == True
+        assert response['ok'] == True ## ensures the message was received
 
     @timeout(10)
-    def clear_duplicates(self):
+    def clear_duplicates(self): ## keeps oldest message with same ID and deletes newer duplicates (IF needed)
         for ts in self.actions[self.actions['ID'].duplicated(keep='last') & (self.actions['ID'].isna() == False)]['ts']: ## deletes duplicates
             self.client.chat_delete(channel=self.channel, ts=ts)
             self.actions = self.actions[self.actions['ts'] != ts] ## removes message from log
 
     @timeout(10)
-    def close_job(self, ts):
+    def close_job(self, ts): ## reacts with emoji ti the required post
 
         response = self.client.reactions_add(channel=self.channel,
                                              timestamp=ts,
                                              name=self.closed_symbol
         )
-        assert response['ok'] == True
+        assert response['ok'] == True ## ensures the message was recieved
 
-    def update_master(self):
+    def update_master(self): ## Appends master record with current data
 
         path = os.sys.path[0] + '/Files/Master_Record.csv'
         
@@ -181,7 +180,7 @@ class Slack_Functions():
             self.actions.to_csv(path)
 
     @timeout(10)
-    def post_reminder(self, reminder_ts = None): ## fix to handle ts after crash
+    def post_reminder(self, reminder_ts = None): ## fix to handle ts after crash ## (I dont remember what the actual issue was here)
         if reminder_ts != None:
             self.reminder_ts = reminder_ts
             
@@ -193,7 +192,7 @@ class Slack_Functions():
         df = pd.DataFrame(self.message_log['messages'])
         ts = df[df['text'].apply(lambda x: 'Active Requests' in x)]['ts'].astype(float)
 
-        if (start <= now and now < stop) and (len(self.warn_acceptance) + len(self.warn_service) > 0):
+        if (start <= now and now < stop) and (len(self.warn_acceptance) + len(self.warn_service) > 0): ## in the agreed upon time, and hasnt been posted within X amount of time
 
             df = pd.concat([self.warn_acceptance, self.warn_service]).sort_index()
             request_ts = str(df['ts'].iloc[0])
@@ -201,7 +200,7 @@ class Slack_Functions():
             
             message = self.reminder_message
             
-            url = f'https://limeops-austin.slack.com/archives/{self.channel}/p{request_ts}'
+            url = f'https://limeops-austin.slack.com/archives/{self.channel}/p{request_ts}' ## url for the oldest active post
             link = f'<{url}|Active Requests>'
 
             message = message.replace('Active Requests', link)
@@ -233,7 +232,7 @@ class Slack_Functions():
 
         elif len(ts) > 0:
 
-            for _ts in ts:
+            for _ts in ts: ## on the off chance it double posts, it will delete all reminders after they are no longer required.
                 response = self.client.chat_delete(channel=self.channel,
                                                    ts= _ts
                 )

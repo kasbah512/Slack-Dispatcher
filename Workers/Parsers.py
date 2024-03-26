@@ -7,32 +7,32 @@ from email.mime.text import MIMEText
 import os
 import json
 
-def Recieved_time(date):
+def Recieved_time(date): ## Formats datetime into a functional, localized datetime object.
 
     date = pd.to_datetime(datetime.strptime(date, '%d %b %Y %H:%M:%S %z')).tz_convert('America/Chicago')
 
     return date
 
 class Parsers():
-    def __init__(self):
+    def __init__(self): ## loads configuration settings
         with open(os.sys.path[0] + '/Files/settings.json', 'r') as f:
             settings = json.loads(f.read())
 
-        self.url = settings['url']
+        self.url = settings['url'] ## needed for whitelisting photo links from dispatch (safe url's)
         self.subject = settings['subject']
         self.username = settings['username']
-        self.reciever = settings['reciever']
-        self.report_reciever = settings['report_reciever']
+        self.reciever = settings['reciever'] ## can be a string or a list
+        self.report_reciever = settings['report_reciever'] ## can be a string or a list
 
     def format_log(self, messages):
         df = pd.DataFrame(messages)
 
-        df['text'] = df['text'].apply(lambda x: x.split('\n')[0] if self.subject in x else np.nan)
-        df['dt'] = df['ts'].astype(float).apply(datetime.fromtimestamp)
+        df['text'] = df['text'].apply(lambda x: x.split('\n')[0] if self.subject in x else np.nan) ## Only matters if the specified subject criterea is present, or else NaN
+        df['dt'] = df['ts'].astype(float).apply(datetime.fromtimestamp) ## Converts timestamp string into a datetime object.
 
         return df
 
-    def compile_actions(self, i, _df, users):
+    def compile_actions(self, i, _df, users): ## Disects slack message and responses into a row for tabulation
         idx = _df['dt'].iloc[i]
         text = _df['text'].iloc[i]
         ts = _df['ts'].iloc[i]
@@ -52,7 +52,7 @@ class Parsers():
 
         return df
 
-    def format_slack_message(self, message, counter): 
+    def format_slack_message(self, message, counter): ## Cool features such as adding hyperlinks for addresses and photos.
 
         text = re.findall(f'({self.subject}(.|\n)*)',
                           message.get_payload())[0][0]
@@ -100,7 +100,7 @@ class Parsers():
 
         return text
 
-    def format_reply_email(self, message):
+    def format_reply_email(self, message): ## Takes the raw email from dispatch and constructs a reply message (Doesnt require the same sender, and can be multiple addresses)
         text = message.get_payload().replace('=\r\n', '')
         date = datetime.strptime(message['Date'], '%d %b %Y %H:%M:%S %z').strftime('%a, %b %d, %Y at %I:%M %p')
 
@@ -117,9 +117,9 @@ class Parsers():
 
         message['From'] = self.username
 
-        if isinstance(self.reciever, list):
+        if isinstance(self.reciever, list): ## takes a list for reciever
             message['To'] = ', '.join(self.reciever)
-        elif isinstance(self.reciever, str):
+        elif isinstance(self.reciever, str):## takes a string for reciever
             message['To'] = self.reciever
 
         message['Subject'] = 'Re: ' + subject
