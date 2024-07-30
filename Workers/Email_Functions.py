@@ -49,7 +49,6 @@ class Email_Functions():
 
         cut = (datetime.now() - timedelta(days=days)).strftime("%d-%b-%Y") ## cutoff date for search query
 
-        print(self.sender)
         if isinstance(self.sender, str):
             query = f'From "{self.sender}" Subject "{self.subject}" SINCE "{cut}"' ## Imap protocol search query
 
@@ -58,8 +57,6 @@ class Email_Functions():
 
             for sender in self.sender:
                 query += f' (From "{sender}" Subject "{self.subject}" SINCE "{cut}")'
-
-            print(query)
         
         response = self.imap.search(None, query)    ## response from imap server
 
