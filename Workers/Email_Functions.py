@@ -48,8 +48,19 @@ class Email_Functions():
         assert response[0] == 'OK'  ## ensures action was success, raises error if not
 
         cut = (datetime.now() - timedelta(days=days)).strftime("%d-%b-%Y") ## cutoff date for search query
-        query = f'From "{self.sender}" Subject "{self.subject}" SINCE "{cut}"' ## Imap protocol search query
 
+        print(self.sender)
+        if isinstance(self.sender, str):
+            query = f'From "{self.sender}" Subject "{self.subject}" SINCE "{cut}"' ## Imap protocol search query
+
+        elif isinstance(self.sender, list):
+            query = 'OR'
+
+            for sender in self.sender:
+                query += f' (From "{sender}" Subject "{self.subject}" SINCE "{cut}")'
+
+            print(query)
+        
         response = self.imap.search(None, query)    ## response from imap server
 
         assert response[0] == 'OK'  ## ensures action was success, raises error if not
