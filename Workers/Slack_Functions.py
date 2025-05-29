@@ -143,7 +143,8 @@ class Slack_Functions():
         response = self.client.chat_postMessage(channel=self.channel,
                                                 text=message,
                                                 unfurl_links=False, ## wont render webpages in slack
-                                                unfurl_media=False  ## wont render images in slack
+                                                unfurl_media=False, ## wont render images in slack
+                                                parse="none",       ## Prevents typos from being converted to hyperlinks
         )
         assert response['ok'] == True ## ensures the message was received
 
