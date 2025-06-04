@@ -26,6 +26,7 @@ class Email_Functions():
         self.report_reciever = settings['report_reciever']  ## manager to recieve email 
 
         self.subject = settings['subject']      ## desired email subject pattern for imap search
+        self.not_subject = settings['not_subject']  ## imap "exclude subject"
 
         self.imap = imaplib.IMAP4_SSL(host='imap.gmail.com', port='993') ## launches imap instance
         self.imap.login(self.username, self.password)   ## logs into imap instance
@@ -50,13 +51,13 @@ class Email_Functions():
         cut = (datetime.now() - timedelta(days=days)).strftime("%d-%b-%Y") ## cutoff date for search query
 
         if isinstance(self.sender, str):
-            query = f'From "{self.sender}" Subject "{self.subject}" SINCE "{cut}"' ## Imap protocol search query
+            query = f'From "{self.sender}" SUBJECT "{self.subject}" NOT SUBJECT "{self.not_subject}" SINCE "{cut}"' ## Imap protocol search query
 
         elif isinstance(self.sender, list):
             query = 'OR'
 
             for sender in self.sender:
-                query += f' (From "{sender}" Subject "{self.subject}" SINCE "{cut}")'
+                query += f' (From "{sender}" SUBJECT "{self.subject}" NOT SUBJECT "{self.not_subject}" SINCE "{cut}")'
         
         response = self.imap.search(None, query)    ## response from imap server
 
@@ -78,28 +79,33 @@ class Email_Functions():
                 assert response[0] == 'OK'
 
                 _message = response[1][0][1] ## raw email data
+                
+                response = self.imap.fetch(inbox_id, "INTERNALDATE")
+                assert response[0] == "OK"
+
+                _datetime = response[1][0].decode().split('"')[1]
 
                 message = email.message_from_bytes(_message) ## formated email data
-                date = Recieved_time(message['Date']).date() ## date the email was recieved
+                date = Recieved_time(_datetime) ## datetime the email was recieved
 
                 self.inbox.loc[inbox_id] = [None] * len(self.inbox.columns) ## initializes empty row for inbox id n
 
-                self.inbox['Subject'].loc[inbox_id] = message['Subject']    ## email subject
-                self.inbox['Raw'].loc[inbox_id] = message                   ## "raw" email data
-                self.inbox['Reply'].loc[inbox_id] = self.Parsers.format_reply_email(message)    ## closing response reply message (creates thread)
-                self.inbox['Date'].loc[inbox_id] = date                     ## date the email was recieved
+                self.inbox.loc[inbox_id, 'Subject'] = message['Subject']    ## email subject
+                self.inbox.loc[inbox_id, 'Raw'] = message                   ## "raw" email data
+                self.inbox.loc[inbox_id, 'Reply'] = self.Parsers.format_reply_email(message, date)    ## closing response reply message (creates thread)
+                self.inbox.loc[inbox_id, 'Date'] = date                     ## date the email was recieved
 
             else:
                 message = self.inbox['Raw'].loc[inbox_id]
                 
-            if self.inbox['Date'].loc[inbox_id] == initial:
+            if self.inbox.loc[inbox_id, 'Date'].date() == initial:
                 counter += 1
             else:
                 counter = 1
-                initial = self.inbox['Date'].loc[inbox_id]
+                initial = self.inbox.loc[inbox_id, 'Date'].date()
 
-            self.inbox['Slack'].loc[inbox_id] = self.Parsers.format_slack_message(message, counter)
-            self.inbox['Counter'].loc[inbox_id] = counter
+            self.inbox.loc[inbox_id, 'Slack'] = self.Parsers.format_slack_message(message, self.inbox.loc[inbox_id, 'Date'], counter)
+            self.inbox.loc[inbox_id, 'Counter'] = counter
 
         return(self.inbox)
 

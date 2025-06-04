@@ -9,7 +9,7 @@ import json
 
 def Recieved_time(date): ## Formats datetime into a functional, localized datetime object.
 
-    date = pd.to_datetime(datetime.strptime(date, '%d %b %Y %H:%M:%S %z')).tz_convert('America/Chicago')
+    date = pd.to_datetime(datetime.strptime(date, '%d-%b-%Y %H:%M:%S %z')).tz_convert('America/Chicago') ## INTERNALDATE specified format
 
     return date
 
@@ -52,10 +52,18 @@ class Parsers():
 
         return df
 
-    def format_slack_message(self, message, counter): ## Cool features such as adding hyperlinks for addresses and photos.
+    def format_slack_message(self, message, date, counter): ## Cool features such as adding hyperlinks for addresses and photos.
+
+        message = message.get_payload()
+
+        if isinstance(message, list):
+            html = message[1].get_payload()
+
+        elif isinstance(message, str):
+            html = message
 
         text = re.findall(f'({self.subject}(.|\n)*)',
-                          message.get_payload())[0][0]
+                          html)[0][0]
 
         text = (text.replace('=\r\n', '')
                     .replace('=20', '')
@@ -82,7 +90,7 @@ class Parsers():
 
         text = text.replace(address, maplink)
 
-        _text = message.get_payload().replace('=\r\n', '').replace('=20', '')
+        _text = html.replace('=\r\n', '').replace('=20', '')
         s = f'<a href=3D"({self.url}.+?)">'
 
         photolinks = []
@@ -94,15 +102,23 @@ class Parsers():
 
         photolinks = ' '.join(photolinks)
 
-        recieved = 'Received: ' + Recieved_time(message['Date']).strftime('%I:%M %p %m-%d-%Y')
+        recieved = 'Received: ' + date.strftime('%I:%M %p %m-%d-%Y')
 
         text = (text + recieved + '\n' + photolinks).strip() + f'\n#{counter}'
 
         return text
 
-    def format_reply_email(self, message): ## Takes the raw email from dispatch and constructs a reply message (Doesnt require the same sender, and can be multiple addresses)
-        text = message.get_payload().replace('=\r\n', '')
-        date = datetime.strptime(message['Date'], '%d %b %Y %H:%M:%S %z').strftime('%a, %b %d, %Y at %I:%M %p')
+    def format_reply_email(self, message, date): ## Takes the raw email from dispatch and constructs a reply message (Doesnt require the same sender, and can be multiple addresses)
+
+        content = message.get_payload()
+
+        if isinstance(content, list):
+            text = content[1].get_payload()
+
+        elif isinstance(content, str):
+            text = content
+
+        date = date.strftime('%a, %b %d, %Y at %I:%M %p')
 
         with open(os.sys.path[0] + '/Files/Reply_Template.html', 'r') as f:
             html = f.read()

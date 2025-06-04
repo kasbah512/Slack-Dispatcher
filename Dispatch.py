@@ -10,7 +10,7 @@ from Workers import Email_Functions
 
 
 def App():
-
+ 
     Slack = Slack_Functions() ## Per-use Slack functions
     Email = Email_Functions() ## Per-use Email functions
 
@@ -21,13 +21,14 @@ def App():
     while True:
         try:
             if boot:
+
                 Slack.update_users() ## On the first loop, the user list is generated. (occurs after errors or an update)
                 days = 10
                 boot = False
 
             else:
                 days = 5
-
+            
             Slack.update_messages(days=days) ## Downloads raw slack messages within a given timeframe
 
             Slack.update_actions() ## Actions are the various states a request can be in, defined in the settings file
@@ -55,7 +56,6 @@ def App():
 
             if now.weekday() == 6 and now.hour == 20 and report_sent == False:  # sunday at 8 pm
                 Slack.update_users() ## Updates user info on a weekly basis
-                Slack.update_master() ## Logs entire dispatch history to a separate file, to conserve RAM.
 
                 date = now.strftime('%d-%b-%Y') ## Todays Date
 
@@ -88,6 +88,8 @@ def App():
                 with open(os.sys.path[0] + '/Files/ERRORS.txt', 'a') as f: ## Logs any errors to disk, to help identify an issue later
                     error = datetime.now().strftime('%m/%d %I:%M %p') + ' ' + 'SYSTEM OK'
                     f.write(error + '\n')
+
+            Slack.update_master()
 
         except KeyboardInterrupt:
             break
